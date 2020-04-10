@@ -8,31 +8,31 @@ namespace SycomplaWebAppClientCore
 {
     public class Ac4yRestServiceClient
     {
-        public string URL { get; set; }
+        public string Server { get; set; }
 
         public Ac4yRestServiceClient() { }
 
-        public Ac4yRestServiceClient(string url)
+        public Ac4yRestServiceClient(string server)
         {
-            URL = url;
+            Server = server;
         }
 
-        public string GET(string path, string DATA)
+        public string GET(string path, string request)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(URL + path);
+            httpClient.BaseAddress = new Uri(Server + path);
             httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-            HttpRequestMessage request = new HttpRequestMessage()
+            HttpRequestMessage httpRequest = new HttpRequestMessage()
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(URL),
-                Content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json"),
+                RequestUri = new Uri(Server),
+                Content = new StringContent(request, UTF8Encoding.UTF8, "application/json"),
             };
 
-            HttpContent content = new StringContent(DATA, UTF8Encoding.UTF8, "application/json");
+            HttpContent content = new StringContent(request, UTF8Encoding.UTF8, "application/json");
 
-            HttpResponseMessage message = httpClient.SendAsync(request).Result;
+            HttpResponseMessage message = httpClient.SendAsync(httpRequest).Result;
             string result = message.Content.ReadAsStringAsync().Result;
 
             return result;
@@ -41,25 +41,25 @@ namespace SycomplaWebAppClientCore
         public string GET(string pathAndParameter)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(URL + "?" + pathAndParameter);
+            httpClient.BaseAddress = new Uri(Server + "?" + pathAndParameter);
             httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
             
-            HttpResponseMessage message = httpClient.GetAsync(URL).Result;
+            HttpResponseMessage message = httpClient.GetAsync(Server).Result;
             string result = message.Content.ReadAsStringAsync().Result;
 
             return result;
         }
 
-        public string POST(string path, string DATA)
+        public string POST(string path, string request)
         {
             using (var httpClient = new HttpClient())
             {
-                using (var request = new HttpRequestMessage(new HttpMethod("POST"), URL + path))
+                using (var httpRequest = new HttpRequestMessage(new HttpMethod("POST"), Server + path))
                 {
-                    request.Content = new StringContent(DATA);
-                    request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+                    httpRequest.Content = new StringContent(request);
+                    httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-                    var response = httpClient.SendAsync(request).Result;
+                    var response = httpClient.SendAsync(httpRequest).Result;
                     return response.Content.ReadAsStringAsync().Result;
                 }
             }
