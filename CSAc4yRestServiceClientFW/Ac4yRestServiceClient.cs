@@ -9,12 +9,19 @@ namespace SycomplaWebAppClientCore
     public class Ac4yRestServiceClient
     {
         public string Server { get; set; }
+        public string AuthorizationKey { get; set; }
 
         public Ac4yRestServiceClient() { }
 
         public Ac4yRestServiceClient(string server)
         {
             Server = server;
+        }
+
+        public Ac4yRestServiceClient(string server, string key)
+        {
+            Server = server;
+            AuthorizationKey = key;
         }
 
         public string GET(string path, string request)
@@ -59,11 +66,15 @@ namespace SycomplaWebAppClientCore
                     httpRequest.Content = new StringContent(request);
                     httpRequest.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
+                    if(AuthorizationKey != null && !AuthorizationKey.Equals(""))
+                        httpRequest.Headers.TryAddWithoutValidation("Authorization", "key=" + AuthorizationKey);
+
                     var response = httpClient.SendAsync(httpRequest).Result;
                     return response.Content.ReadAsStringAsync().Result;
                 }
             }
         }
+
 
     }
 }
